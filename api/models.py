@@ -4,10 +4,27 @@ from django.utils import timezone
 
 # Create your models here.
 
-class Task(models.Model):
+class AbstractModel(models.Model):
+    crated_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        abstract = True
+
+
+class Task(AbstractModel):
     title = models.CharField(max_length=180)
     description = models.TextField(null=True, blank=True)
     priority = models.IntegerField(choices=((0,'Low'), (1,'Medium'),(2,'High')))
     crated_at = models.DateTimeField(default=timezone.now)
     expired_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"#{self.id}:{self.title}"
+
+
+
+class Comment(AbstractModel):
+    task=models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comment_task')
+    comment = models.TextField()
+
 
